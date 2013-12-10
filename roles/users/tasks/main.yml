@@ -1,0 +1,24 @@
+---
+# This role will maintain the list of users required on the system.
+
+# Matt
+- name: Create user matt
+  user: name=matt append=yes groups=sudo state=present shell=/bin/bash comment="Matthew Oliver"
+
+- name: Add SSH authorized keys for matt
+  authorized_key: key="{{ item }}" state=present user=matt
+  with_items:
+   - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDH8nJUHgct5gRBLCJs46TSYQu7IklE1K28JkSVFRZN0LZv7XOX+v7l6Gy+KyGevXRX5V5mq/hyVg9sSJaWl90xTVGHgOt9a4BOrcWLgT+q1Oy22nT8JpszKkKzND+VGct70HGzoZedPOVmuuMXkSW8lVwsN6VXPXOS03ybqRXtpBOx1eoWGJlsM/E86853Cd+NzMrpiewldPXaB5Sw+gze+s4MNk9dP1DoQRUGDxEmJmjhuhR9xrzPTzhO9q/jWSSWTQqBzsZz5eEC4cl+eTTCUmdAnbjD8adBdNJQw7KW1/ZxMl48E0MjMGmf7IxO+CLTdWEnRBRNCj33Nb/jETgT matt@ansible-master"
+  ignore_errors: yes
+
+# Testuser
+
+- name: Create user testuser
+  user: name=testuser append=yes groups=sudo state=absent shell=/bin/bash comment="Test User"
+
+- name: Modify SSH authorized keys for Testuser
+  authorized_key: key="{{ item }}" state=absent user=testuser
+  with_items:
+   - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDH8nJUHgct5gRBLCJs46TSYQu7IklE1K28JkSVFRZN0LZv7XOX+v7l6Gy+KyGevXRX5V5mq/hyVg9sSJaWl90xTVGHgOt9a4BOrcWLgT+q1Oy22nT8JpszKkKzND+VGct70HGzoZedPOVmuuMXkSW8lVwsN6VXPXOS03ybqRXtpBOx1eoWGJlsM/E86853Cd+NzMrpiewldPXaB5Sw+gze+s4MNk9dP1DoQRUGDxEmJmjhuhR9xrzPTzhO9q/jWSSWTQqBzsZz5eEC4cl+eTTCUmdAnbjD8adBdNJQw7KW1/ZxMl48E0MjMGmf7IxO+CLTdWEnRBRNCj33Nb/jETgT matt@ansible-master"
+  ignore_errors: yes
+

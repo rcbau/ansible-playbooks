@@ -1,0 +1,24 @@
+---
+# This playbook deploys the whole application stack in this site.  
+
+# Apply common configuration to all hosts
+- hosts: all
+  sudo: yes
+  roles:
+  - common
+  - users
+
+# Configure and deploy database servers.
+- hosts: dbservers
+  sudo: yes
+  roles:
+  - db
+
+# Configure and deploy the web servers. Note that we include two roles here, 
+# the 'base-apache' role which simply sets up Apache, and 'web' which includes
+# our example web application.
+- hosts: webservers
+  sudo: yes
+  roles:
+  - base-apache
+  - web

@@ -1,0 +1,10 @@
+---
+# This role installs httpd
+
+- name: Install apache2
+  apt: pkg={{ item }} state=present
+  with_items:
+   - apache2
+
+- name: apache service state
+  service: name=apache2 state=started enabled=yes

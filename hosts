@@ -1,0 +1,8 @@
+[turbo-hipsters]
+node[1:2]
+
+[dbservers]
+node1
+
+[webservers]
+node2
