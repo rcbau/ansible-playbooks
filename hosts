@@ -1,8 +1,8 @@
-[turbo-hipsters]
+[turbo-hipsters-mysql]
 node1
 
-[dbservers]
-node1
+[turbo-hipsters-percona]
+node2
 
 [webservers]
 node2

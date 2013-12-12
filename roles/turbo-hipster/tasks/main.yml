@@ -46,15 +46,15 @@
   git: repo={{ th_repo }} dest={{ th_repo_destination }}
   notify:
   - install turbo-hipster
+  - create turbo-hipster directories
   - restart turbo-hipster
-
-#- name: Copy config and init script
-#  command: cp -r {{ th_repo_destination }}/etc /
-
 
 - name: Change ownership of the code over to turbo-hipster
   command: chown turbo-hipster:turbo-hipster -R {{ th_repo_destination }}
 
-#- name: Deploying config file - config.json
-#  file: src=config.json dest=/etc/turbo-hipster/config.json owner=root mode=0644
- 
+- name: Deploying config file - config.json
+  template: src=config.json.j2 dest=/etc/turbo-hipster/config.json owner=root mode=0644
+  notify:
+  - extract datasets
+  - restart turbo-hipster
+

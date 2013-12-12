@@ -8,11 +8,6 @@
   - common
   - users
 
-# Configure and deploy database servers.
-- hosts: dbservers
-  sudo: yes
-  roles:
-  - db
 
 # Configure and deploy the web servers. Note that we include two roles here, 
 # the 'base-apache' role which simply sets up Apache, and 'web' which includes
@@ -23,7 +18,14 @@
   - base-apache
   - web
 
-- hosts: turbo-hipsters
+- hosts: turbo-hipsters-mysql
   sudo: yes
   roles:
+  - mysql
+  - turbo-hipster
+
+- hosts: turbo-hipsters-percona
+  sudo: yes
+  roles:
+  - percona
   - turbo-hipster

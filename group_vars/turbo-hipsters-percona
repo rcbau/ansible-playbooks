@@ -7,3 +7,4 @@
 # Repository holding the turbo-hipster code. 
 th_repo: "https://github.com/rcbau/turbo-hipster.git"
 th_repo_destination: "/home/turbo-hipster/turbo-hipster"
+db_engine: "percona"
