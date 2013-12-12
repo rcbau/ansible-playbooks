@@ -1,0 +1,9 @@
+---
+# Handler to manage the turbo-hipster role. 
+
+- name: install turbo-hipster
+  command: cd {{ th_repo_destination }} && python setup.py install
+  notify: restart turbo-hipster
+
+- name: restart turbo-hipster
+  service: name=turbo-hipster state=restarted

@@ -22,3 +22,8 @@
   roles:
   - base-apache
   - web
+
+- hosts: turbo-hipsters
+  sudo: yes
+  roles:
+  - turbo-hipster

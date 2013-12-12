@@ -1,5 +1,5 @@
 [turbo-hipsters]
-node[1:2]
+node1
 
 [dbservers]
 node1

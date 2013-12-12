@@ -1,0 +1,56 @@
+---
+# This role installs httpd
+
+- name: Install turbo-hipster dependancies - APT
+  apt: pkg={{ item }} state=present
+  with_items:
+   - git
+   - python-pip
+   - python-swiftclient
+   - python-daemon
+
+- name: Install turbo-hipster dependancies - PIP
+  pip: name={{ item }} state=present
+  with_items:
+   - pbr
+   - gear
+   - lockfile
+   - extras
+   - GitPython
+   - sphinxcontrib-programoutput
+
+- name: Install turbo-hipster testing dependancies - APT
+  apt: pkg={{ item }} state=present
+  with_items:
+   - python-sphinx
+   - python-subunit
+
+- name: Install turbo-hipster testing dependancies - PIP
+  pip: name={{ item }} state=present
+  with_items:
+   - pep8
+   - pyflakes
+   - flake8
+   - hacking
+   - coverage
+   - docutils
+   - discover
+   - testrepository
+   - testtools
+
+- name: Create user turbo-hipster
+  user: name=turbo-hipster append=yes state=present shell=/bin/bash 
+        home=/home/turbo-hipster comment="Turbo-Hipster user"
+        password="$6$LIigUiMz$3Ha4DMMWDczx5F2GfBvODaTam96DChGCIq0KGGpbSMs83GFp/0rhIlwZS27m1tGwHXVfdxrONpQpLZCrDWfVs0"
+
+- name: Copy the code from repository
+  git: repo={{ th_repo }} dest={{ th_repo_destination }}
+  notify:
+  - install turbo-hipster
+
+- name: Change ownership of the code over to turbo-hipster
+  command: chown turbo-hipster:turbo-hipster -R {{ th_repo_destination }}
+
+#- name: Deploying config file - config.json
+#  file: src=config.json dest=/etc/turbo-hipster/config.json owner=root mode=0644
+ 
