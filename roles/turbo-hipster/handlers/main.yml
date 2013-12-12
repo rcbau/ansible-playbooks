@@ -2,8 +2,7 @@
 # Handler to manage the turbo-hipster role. 
 
 - name: install turbo-hipster
-  command: cd {{ th_repo_destination }} && python setup.py install
-  notify: restart turbo-hipster
+  raw: cd {{ th_repo_destination }} && /usr/bin/python setup.py install --record files.txt &&  cp -r {{ th_repo_destination }}/etc /
 
 - name: restart turbo-hipster
   service: name=turbo-hipster state=restarted

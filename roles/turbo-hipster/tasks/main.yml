@@ -41,12 +41,16 @@
 - name: Create user turbo-hipster
   user: name=turbo-hipster append=yes state=present shell=/bin/bash 
         home=/home/turbo-hipster comment="Turbo-Hipster user"
-        password="$6$LIigUiMz$3Ha4DMMWDczx5F2GfBvODaTam96DChGCIq0KGGpbSMs83GFp/0rhIlwZS27m1tGwHXVfdxrONpQpLZCrDWfVs0"
 
 - name: Copy the code from repository
   git: repo={{ th_repo }} dest={{ th_repo_destination }}
   notify:
   - install turbo-hipster
+  - restart turbo-hipster
+
+#- name: Copy config and init script
+#  command: cp -r {{ th_repo_destination }}/etc /
+
 
 - name: Change ownership of the code over to turbo-hipster
   command: chown turbo-hipster:turbo-hipster -R {{ th_repo_destination }}
