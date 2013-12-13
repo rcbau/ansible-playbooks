@@ -5,4 +5,12 @@
 # Repository holding the turbo-hipster code. 
 th_repo: "https://github.com/rcbau/turbo-hipster.git"
 th_repo_destination: "/home/turbo-hipster/turbo-hipster"
+th_dataset_path: "/var/lib/turbo-hipster/"
+th_user: "turbo-hipster"
+
+# DB settings
 db_engine: "mysql"
+db_engine_port: 3306
+#db_root_password: "laeNgoodai.theez2Pae"
+db_root_password: "iemaster"
+

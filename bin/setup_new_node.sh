@@ -1,4 +1,5 @@
-s script sets up a new node for ansible. How? 
+#!/bin/bash
+# This script sets up a new node for ansible. How? 
 # 1- Creates an ansible user, with no password.
 # 2- Adds an SSH Key for the ansible user, so the ansible server can access it. 
 # 3- Sets up sudo for this user so it doesn't need a password.

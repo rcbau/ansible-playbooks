@@ -24,8 +24,8 @@
   - mysql
   - turbo-hipster
 
-- hosts: turbo-hipsters-percona
-  sudo: yes
-  roles:
-  - percona
-  - turbo-hipster
+#- hosts: turbo-hipsters-percona
+#  sudo: yes
+#  roles:
+#  - percona
+#  - turbo-hipster

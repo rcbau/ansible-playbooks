@@ -5,11 +5,17 @@
   raw: cd {{ th_repo_destination }} && /usr/bin/python setup.py install --record files.txt &&  cp -r {{ th_repo_destination }}/etc /
 
 - name: create turbo-hipster directories
-  raw: mkdir -p /var/log/turbo-hipster/ /var/cache/pip && chown turbo-hipster:turbo-hipster -R /var/log/turbo-hipster/ && chmod 777 /var/cache/pip
+  raw: mkdir -p /var/log/turbo-hipster/ /var/cache/pip && chown {{ th_user }}:{{ th_user }} -R /var/log/turbo-hipster/ && chmod 777 /var/cache/pip
+
+- name: extract datasets
+  unarchive: src=turbo-hipster-datasets.tar.bz2 dest=/  
+
+- name: set dataset permissions
+  command: chown {{ th_user }}:{{ th_user }} -R {{ th_dataset_path }}
+
+- name: deploying config file - config.json
+  template: src=config.json.j2 dest=/etc/turbo-hipster/config.json owner=root mode=0644
 
 - name: restart turbo-hipster
   service: name=turbo-hipster state=restarted
 
-
-- name: extract datasets
-  command: whoami  

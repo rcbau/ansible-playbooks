@@ -1,6 +1,19 @@
 ---
-# This role installs httpd
+# This role installs Turbo-Hipster
 
+# Create MySQL databases
+
+- include_vars: databases.yml
+
+- name: creating databases
+  mysql_db: name={{ item }} state=present
+  with_items: databases
+
+- name: Create Application DB User
+  mysql_user: name=nova password=tester append_privs=yes priv={{ item }}.*:ALL host='%' state=present
+  with_items: databases
+
+# Install turbo-hipster dependancies
 - name: Install turbo-hipster dependancies - APT
   apt: pkg={{ item }} state=present
   with_items:
@@ -8,6 +21,8 @@
    - python-pip
    - python-swiftclient
    - python-daemon
+   - tar
+   - bzip2
 
 - name: Install turbo-hipster dependancies - PIP
   pip: name={{ item }} state=present
@@ -39,22 +54,20 @@
    - testtools
 
 - name: Create user turbo-hipster
-  user: name=turbo-hipster append=yes state=present shell=/bin/bash 
-        home=/home/turbo-hipster comment="Turbo-Hipster user"
+  user: name={{ th_user }} append=yes state=present shell=/bin/bash 
+        home=/home/{{ th_user }} comment="Turbo-Hipster user"
 
+# Install and setup Turbo-Hipster.
 - name: Copy the code from repository
   git: repo={{ th_repo }} dest={{ th_repo_destination }}
   notify:
-  - install turbo-hipster
-  - create turbo-hipster directories
-  - restart turbo-hipster
+   - install turbo-hipster
+   - create turbo-hipster directories
+   - deploying config file - config.json
+   - extract datasets
+   - set dataset permissions
+   - restart turbo-hipster
 
 - name: Change ownership of the code over to turbo-hipster
-  command: chown turbo-hipster:turbo-hipster -R {{ th_repo_destination }}
-
-- name: Deploying config file - config.json
-  template: src=config.json.j2 dest=/etc/turbo-hipster/config.json owner=root mode=0644
-  notify:
-  - extract datasets
-  - restart turbo-hipster
+  command: chown {{ th_user }}:{{ th_user }} -R {{ th_repo_destination }}
 
