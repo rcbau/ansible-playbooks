@@ -64,7 +64,6 @@
    - install turbo-hipster
    - create turbo-hipster directories
    - deploying config file - config.json
-   - extract datasets
    - set dataset permissions
    - restart turbo-hipster
 
@@ -72,6 +71,6 @@
   command: chown {{ th_user }}:{{ th_user }} -R {{ th_repo_destination }}
 
 - name: Synchronise the datasets
-  synchronize: archive=yes delete=yes src={{ th_local_dataset_path }} dest={{ th_repo_destination }} rsync_path="sudo rsync"
+  synchronize: archive=yes delete=yes src={{ th_local_dataset_path }} dest={{ th_dataset_path }} rsync_path="sudo rsync"
   notify:
    - restart turbo-hipster

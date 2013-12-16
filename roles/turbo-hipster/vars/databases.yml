@@ -1,4 +1,5 @@
 ---
+# List of databases used by the Turbo-Hipster tests. 
 databases:
   - nova_dataset_20130910_devstack_applied_to_150 
   - nova_dataset_20131007_devstack                
