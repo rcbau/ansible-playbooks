@@ -12,11 +12,11 @@
 # Configure and deploy the web servers. Note that we include two roles here, 
 # the 'base-apache' role which simply sets up Apache, and 'web' which includes
 # our example web application.
-- hosts: webservers
-  sudo: yes
-  roles:
-  - base-apache
-  - web
+#- hosts: webservers
+#  sudo: yes
+#  roles:
+#  - base-apache
+#  - web
 
 - hosts: turbo-hipsters-mysql
   sudo: yes
@@ -24,8 +24,8 @@
   - mysql
   - turbo-hipster
 
-#- hosts: turbo-hipsters-percona
-#  sudo: yes
-#  roles:
-#  - percona
-#  - turbo-hipster
+- hosts: turbo-hipsters-percona
+  sudo: yes
+  roles:
+  - percona
+  - turbo-hipster

@@ -1,0 +1,6 @@
+---
+# Handler to handle DB tier notifications
+
+- name: restart percona
+  service: name=mysql state=restarted
+
