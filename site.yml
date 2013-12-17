@@ -29,3 +29,9 @@
   roles:
   - percona
   - turbo-hipster
+
+- hosts: turbo-hipsters-mariadb
+  sudo: yes
+  roles:
+  - mariadb
+  - turbo-hipster

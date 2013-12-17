@@ -4,5 +4,8 @@ node1
 [turbo-hipsters-percona]
 node2
 
+[turbo-hipsters-mariadb]
+node3
+
 [webservers]
 node2
