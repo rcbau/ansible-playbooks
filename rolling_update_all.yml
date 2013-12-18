@@ -2,26 +2,33 @@
 # This playbook does a rolling update for all servers serially (one at a time).
 # Change the value of serial: to adjust the number of server to be updated.
 
-- hosts: turbo-hipsters-mysql
+- hosts: mysql
+  sudo: yes
   serial: 1
   
   roles:
   - common
   - mysql
-  - turbo-hipster
 
-- hosts: turbo-hipsters-percona
+- hosts: percona
+  sudo: yes
   serial: 1
   
   roles:
   - common
   - percona
-  - turbo-hipster
 
-- hosts: turbo-hipsters-mariadb
+- hosts: mariadb
+  sudo: yes
   serial: 1
   
   roles:
   - common
   - mariadb
+
+- hosts: turbo-hipsters
+  sudo: yes
+  serial: 1
+  
+  roles:
   - turbo-hipster

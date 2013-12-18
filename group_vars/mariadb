@@ -1,0 +1,9 @@
+---
+
+# MariaDB settings
+db_engine: "mariadb"
+db_engine_port: 3306
+db_root_password: "laeNgoodai.theez2Pae"
+
+mariadb_version: "5.5"
+mariadb_repo: "http://mirror.aarnet.edu.au/pub/MariaDB/repo/{{ mariadb_version }}/ubuntu"

@@ -1,0 +1,6 @@
+---
+
+# Percona settings
+db_engine: "percona"
+db_engine_port: 3306
+db_root_password: "laeNgoodai.theez2Pae"

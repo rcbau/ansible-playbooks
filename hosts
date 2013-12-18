@@ -1,11 +1,14 @@
-[turbo-hipsters-mysql]
+[mysql]
 node1
 
-[turbo-hipsters-percona]
+[percona]
 node2
 
-[turbo-hipsters-mariadb]
+[mariadb]
 node3
+
+[turbo-hipsters]
+node[1:3]
 
 [webservers]
 node2

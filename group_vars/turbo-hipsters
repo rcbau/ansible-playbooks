@@ -1,8 +1,6 @@
 ---
 
-#Config settings
-
-
+#Turbo-Hipster settings
 
 # Repository holding the turbo-hipster code. 
 th_repo: "https://github.com/rcbau/turbo-hipster.git"
@@ -10,8 +8,3 @@ th_repo_destination: "/home/turbo-hipster/turbo-hipster"
 th_dataset_path: "/var/lib/turbo-hipster/"
 th_local_dataset_path: "/etc/ansible/roles/turbo-hipster/datasets/"
 th_user: "turbo-hipster"
-
-# DB settings
-db_engine: "percona"
-db_engine_port: 3306
-db_root_password: "laeNgoodai.theez2Pae"

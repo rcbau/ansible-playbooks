@@ -18,20 +18,22 @@
 #  - base-apache
 #  - web
 
-- hosts: turbo-hipsters-mysql
+- hosts: mysql
   sudo: yes
   roles:
   - mysql
-  - turbo-hipster
 
-- hosts: turbo-hipsters-percona
+- hosts: percona
   sudo: yes
   roles:
   - percona
-  - turbo-hipster
 
-- hosts: turbo-hipsters-mariadb
+- hosts: mariadb
   sudo: yes
   roles:
   - mariadb
+
+- hosts: turbo-hipsters
+  sudo: yes
+  roles:
   - turbo-hipster
