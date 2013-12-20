@@ -1,5 +1,7 @@
 ---
 # This role contains common plays that will run on all nodes.
+- name: update package lists before software is installed
+  command: apt-get update
 
 - name: install common packages
   apt: pkg={{ item }} state=present
@@ -7,6 +9,7 @@
    - vim
    - tcpdump
    - htop
+   - python-pycurl
 
 - name: Setup vim
   copy: src=vimrc dest=/etc/vim/vimrc

@@ -6,4 +6,5 @@ db_engine_port: 3306
 db_root_password: "laeNgoodai.theez2Pae"
 
 mariadb_version: "5.5"
-mariadb_repo: "http://mirror.aarnet.edu.au/pub/MariaDB/repo/{{ mariadb_version }}/ubuntu"
+db_repo: "deb http://mirror.aarnet.edu.au/pub/MariaDB/repo/{{ mariadb_version }}/ubuntu {{ distro_codename.stdout }} main"
+db_repo_src: "deb http://mirror.aarnet.edu.au/pub/MariaDB/repo/{{ mariadb_version }}/ubuntu {{ distro_codename.stdout }} main"

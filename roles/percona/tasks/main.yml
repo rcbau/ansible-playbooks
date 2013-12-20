@@ -5,12 +5,16 @@
   shell: executable=/bin/bash  source /etc/lsb-release && echo $DISTRIB_CODENAME
   register: distro_codename
 
-- name: Setup percona repo - sources
-  template: src=percona.list.j2 dest=/etc/apt/sources.list.d/percona.list owner=root mode=0644
-
 - name: Setup percona repo - key
   apt_key: url=http://www.percona.com/downloads/RPM-GPG-KEY-percona state=present
   #apt_key: id=0x1C4CBDCDCD2EFD2A url=http://keys.gnupg.net
+
+- name: Setup percona repo - sources - binary
+  apt_repository: repo='{{ db_repo }}' state=present
+#  template: src=percona.list.j2 dest=/etc/apt/sources.list.d/percona.list owner=root mode=0644
+
+- name: Setup percona repo - sources - source
+  apt_repository: repo='{{ db_repo_src }}' state=present
 
 - name: Install Percona package
   apt: pkg={{ item }} state=present
@@ -28,7 +32,7 @@
    - localhost
 
 - name: Create percona configuration file
-  template: src=my.cnf.j2 dest=/etc/my.cnf
+  template: src=my.cnf.percona.j2 dest=/etc/mysql/my.cnf owner=root mode=0644
   notify: 
   - restart percona
 

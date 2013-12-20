@@ -33,7 +33,7 @@
   roles:
   - mariadb
 
-- hosts: turbo-hipsters
+- hosts: turbo-hipster
   sudo: yes
   roles:
   - turbo-hipster

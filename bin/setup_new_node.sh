@@ -31,10 +31,9 @@ check_status $?
 
 # 3- Sets up sudo for this user so it doesn't need a password.
 echo -n "3. Add ansible to sudoers..."
-if [ $(grep -c ^ansible /etc/sudoers) -gt 0 ]
+if [ ! -e /etc/sudoers.d/ansible ]
 then
-    sed -i 's/^ansible.*$/ansible ALL=(ALL) NOPASSWD: ALL/g' /etc/sudoers
-else
-    echo 'ansible ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+    echo "ansible ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/ansible
 fi
 check_status $? 
+

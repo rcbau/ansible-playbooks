@@ -26,7 +26,7 @@
   - common
   - mariadb
 
-- hosts: turbo-hipsters
+- hosts: turbo-hipster
   sudo: yes
   serial: 1
   

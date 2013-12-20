@@ -1,6 +1,15 @@
 ---
+#Turbo-Hipster settings
+
+# Repository holding the turbo-hipster code. 
+th_repo: "https://github.com/rcbau/turbo-hipster.git"
+th_repo_destination: "/home/turbo-hipster/turbo-hipster"
+th_dataset_path: "/var/lib/turbo-hipster/"
+th_local_dataset_path: "/etc/ansible/roles/turbo-hipster/datasets/"
+th_user: "turbo-hipster"
+
 # List of databases used by the Turbo-Hipster tests. 
-databases:
+th_databases:
   - nova_dataset_20130910_devstack_applied_to_150 
   - nova_dataset_20131007_devstack                
   - nova_dataset_trivial_500                      

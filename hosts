@@ -3,12 +3,10 @@ node1
 
 [percona]
 node2
+node4
 
 [mariadb]
 node3
 
-[turbo-hipsters]
-node[1:3]
-
-[webservers]
-node2
+[turbo-hipster]
+node[1:4]

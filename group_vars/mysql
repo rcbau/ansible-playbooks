@@ -3,6 +3,5 @@
 # MySQL settings
 db_engine: "mysql"
 db_engine_port: 3306
-#db_root_password: "laeNgoodai.theez2Pae"
-db_root_password: "iemaster"
+db_root_password: "laeNgoodai.theez2Pae"
 
