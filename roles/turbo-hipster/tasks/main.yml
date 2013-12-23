@@ -21,7 +21,6 @@
    - python-daemon
    - tar
    - bzip2
-   - lxc
 
 - name: Install turbo-hipster dependancies - PIP
   pip: name={{ item }} state=present
@@ -56,11 +55,8 @@
   user: name={{ th_user }} append=yes state=present shell=/bin/bash 
         home=/home/{{ th_user }} comment="Turbo-Hipster user"
 
-- name: Allow turbo-hipster user to run LXC commands
-  template: src=turbo-hipster.sudoers.j2 dest=/etc/sudoers.d/turbo-hipster owner=root mode=0644
-
-- name: Confirm the permisions of the LXC directory
-  command: chown 777 {{ th_lxc_dir }}
+- name: Setup Network Name Space for networkless nova testing
+  shell: executable=/bin/bash ip netns add nonet && ip link add veth0 type veth peer name veth1 && ifconfig veth0 172.16.0.1/24 up && ip link set veth1 netns nonet && ip netns exec nonet ifconfig veth1 172.16.0.2/24 up
 
 # Install and setup Turbo-Hipster.
 - name: Copy the code from repository
