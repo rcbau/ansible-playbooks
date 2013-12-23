@@ -2,7 +2,8 @@
 #Turbo-Hipster settings
 
 # Repository holding the turbo-hipster code. 
-th_repo: "https://github.com/rcbau/turbo-hipster.git"
+#th_repo: "https://github.com/rcbau/turbo-hipster.git"
+th_repo: "https://git.openstack.org/stackforge/turbo-hipster"
 th_repo_destination: "/home/turbo-hipster/turbo-hipster"
 th_dataset_path: "/var/lib/turbo-hipster/"
 th_local_dataset_path: "/etc/ansible/roles/turbo-hipster/datasets/"

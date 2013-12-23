@@ -4,6 +4,7 @@
 db_engine: "percona"
 db_engine_port: 3306
 db_root_password: "laeNgoodai.theez2Pae"
+bind_ip: "0.0.0.0"
 
 
 db_repo: "deb http://repo.percona.com/apt {{ distro_codename.stdout }} main"

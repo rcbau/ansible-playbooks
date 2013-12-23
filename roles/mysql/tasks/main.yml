@@ -18,7 +18,7 @@
    - localhost
 
 - name: Create Mysql configuration file
-  template: src=my.cnf.j2 dest=/etc/my.cnf
+  template: src=my.cnf.j2 dest=/etc/mysql/my.cnf
   notify: 
   - restart mysql
 
