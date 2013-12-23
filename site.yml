@@ -1,5 +1,5 @@
 ---
-# This playbook deploys the whole application stack in this site.  
+# This playbook deploys alll of the turbo-hipter software stack to all the servers.  
 
 # Apply common configuration to all hosts
 - hosts: all
@@ -7,16 +7,6 @@
   roles:
   - common
   - users
-
-
-# Configure and deploy the web servers. Note that we include two roles here, 
-# the 'base-apache' role which simply sets up Apache, and 'web' which includes
-# our example web application.
-#- hosts: webservers
-#  sudo: yes
-#  roles:
-#  - base-apache
-#  - web
 
 - hosts: mysql
   sudo: yes

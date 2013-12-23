@@ -59,6 +59,9 @@
 - name: Allow turbo-hipster user to run LXC commands
   template: src=turbo-hipster.sudoers.j2 dest=/etc/sudoers.d/turbo-hipster owner=root mode=0644
 
+- name: Confirm the permisions of the LXC directory
+  command: chown 777 {{ th_lxc_dir }}
+
 # Install and setup Turbo-Hipster.
 - name: Copy the code from repository
   git: repo={{ th_repo }} dest={{ th_repo_destination }}

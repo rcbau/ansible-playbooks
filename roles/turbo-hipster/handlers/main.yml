@@ -7,9 +7,6 @@
 - name: create turbo-hipster directories
   raw: mkdir -p /var/log/turbo-hipster/ /var/cache/pip {{ th_dataset_path }}/git {{ th_dataset_path }}/jobs  && chown {{ th_user }}:{{ th_user }} -R /var/log/turbo-hipster/ && chmod 777 /var/cache/pip
 
-#- name: extract datasets
-#  unarchive: src=turbo-hipster-datasets.tar.bz2 dest=/  
-
 - name: set dataset permissions
   command: chown {{ th_user }}:{{ th_user }} -R {{ th_dataset_path }}
 

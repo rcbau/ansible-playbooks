@@ -1,6 +1,6 @@
 ---
-# This playbook does a rolling update for all servers serially (one at a time).
-# Change the value of serial: to adjust the number of server to be updated.
+# This playbook does a rolling update of only the turbo-hipster specific portion of each server in the turbo-hipster group.
+# Change the value of serial: to adjust the number of server to be updated at a time.
 
 - hosts: turbo-hipster
   sudo: yes
