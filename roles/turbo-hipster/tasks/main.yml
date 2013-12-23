@@ -8,7 +8,7 @@
   with_items: th_databases
 
 - name: Create Application DB User
-  mysql_user: name=nova password=tester append_privs=yes priv={{ item }}.*:ALL host='%' state=present
+  mysql_user: name={{ th_test_user }} password={{ th_test_pass }} append_privs=yes priv={{ item }}.*:ALL host='{{ th_test_host }}' state=present
   with_items: th_databases
 
 # Install turbo-hipster dependancies
@@ -56,7 +56,7 @@
         home=/home/{{ th_user }} comment="Turbo-Hipster user"
 
 - name: Setup Network Name Space for networkless nova testing
-  shell: executable=/bin/bash ip netns add nonet && ip link add veth0 type veth peer name veth1 && ifconfig veth0 172.16.0.1/24 up && ip link set veth1 netns nonet && ip netns exec nonet ifconfig veth1 172.16.0.2/24 up
+  shell: executable=/bin/bash if [ ! -e '/var/run/netns/nonet' ]; then ip netns add nonet && ip link add veth0 type veth peer name veth1 && ifconfig veth0 172.16.0.1/24 up && ip link set veth1 netns nonet && ip netns exec nonet ifconfig veth1 172.16.0.2/24 up; fi
 
 # Install and setup Turbo-Hipster.
 - name: Copy the code from repository

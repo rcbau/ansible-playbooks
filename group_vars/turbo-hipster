@@ -10,6 +10,11 @@ th_local_dataset_path: "/etc/ansible/roles/turbo-hipster/datasets/"
 th_user: "turbo-hipster"
 th_lxc_dir: "/var/lib/lxc"
 
+# turbo-hipster test database username and password
+th_test_user: "nova"
+th_test_pass: "tester"
+th_test_host: "%"
+
 # List of databases used by the Turbo-Hipster tests. 
 th_databases:
   - nova_dataset_20130910_devstack_applied_to_150 
