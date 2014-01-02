@@ -1,3 +1,360 @@
-ansible-playbooks
+================================================
+= Turbo Hipster orchestration with ansible POC =
+================================================
 
-Put useful infomation about how to run/edit the playbooks here.
+== Introduction == 
+As the need for testing database migrations throughout the OpenStack project is growing,  as is the different possible types of DBMS systems used with the project. Something needed to be done to manage the buld, configuration and deployment of Turbo-Hipster servers. 
+
+Enter [http://www.ansibleworks.com/ Asnible], an IT automation tool. It can configure systems, deploy software, and orchestrate more advanced IT tasks such as continuous deployments or zero downtime rolling updates. The best part is Ansible doesn't require an agent installed on each client/node instead it uses Open SSH as its transport mechanism.
+
+But this article isn't about what ansible is, rather it's about how we can use it to make our lives easier. If you want to read more about ansible see the detailed [http://www.ansibleworks.com/docs/ documentation] on the ansible site.
+
+== Deploy a server ==
+
+=== Quick ===
+Deploying a new turbo-hipster server is simple. All you need to do is follow these steps: 
+* Create a new ubuntu cloud server. 
+* Log in as root, copy the script from "bin/setup_new_node.sh" and run it. 
+* On the ansible master add it to "/etc/hosts" unless it is managed via DNS. 
+* On the ansible master add it to the hosts file. Making sure it is a member of the correct DBMS group and also a member of the Turbo-Hipsters group. 
+* Run the site.yml playbook (which will check all the other servers but not touch them if they are up to date) which will build up the new server.
+
+=== Detailed ===
+TBC
+
+=== Improvements ===
+Ansible has a RAX plugin, which will give us the ability of letting ansible build new cloud servers for us. This would mean that all we would need to do is add the new node/host to the correct groups in the ansible hosts file and then run the relevant playbook and we can add more Turbo-Hipster servers to the environment as required.
+
+== Rolling update of all turbo-hipsters ==
+=== Change in code ===
+The anisble Turbo-Hipster role uses a git module to grab/check the code from the Turbo-Hipster source repository. That means, if there has been a change to the source, then all you need to do is run the rolling_update_turbo_hipster.yml or rolling_update_all.yml playbooks. The former just re-runs the Turbo-Hipster role, double checking required dependencies, checking out the code, etc. If the code has changed then it'll trigger rules to re-install and restart the service. The latter re-runs all the roles. 
+
+In either case, unlike that of the site.yml playbook, it runs them in serial mode. That is, rather then dealing with one server at a time, it only deals with x number of servers at a time, where x is the number that serial is set to. This serial value can be changed in the playbook, at the moment it has been set to 1, so one server is updated at a time.  
+
+Running a playbook is as simple as: 
+<pre>ansible-playbook rolling_update_turbo_hipster.yml</pre> 
+
+=== Dataset or config change ===
+'The Turbo-Hipster role as mentioned above also re-deploys the datasets and a templated config file, so these can be modified and then one of the two rolling update playbooks can be run. 
+
+==== Config.json ====
+The templated config file is located at:
+   roles/turbo-hipster/templates/config.json.j2
+
+Once changed you run a playbook: 
+<pre>ansible-playbook rolling_update_turbo_hipster.yml</pre> 
+
+'''NOTE:''' The current version of the config.jason (roles/turbo-hipster/templates/config.json.j2) has purposely been changed so it wont connect to the zuul server. This was so test jobs wouldn't be used on these servers while they are going up and down. 
+There real, unbroken version is 'roles/turbo-hipster/templates/config.json.j2-real'. 
+Therefore, when you want to test the servers with Zuul, just rename to the real file to 'config.json'.
+
+==== Datasets ====
+The datasets, as of writing are rsync'd from the ansible_master server to the node/clients/hosts. The ansible synchronize module is used which is a simple wrapper for rsync. Unfortunately, this module can either take a reletive path (from where your running the runbook from) or a full path. At the moment it has been set to a full path which has been stored in the variable "th_local_dataset_path" in the "group_vars/turbo_hipster" file:
+<pre>
+# grep th_local_dataset_path group_vars/turbo-hipster
+th_local_dataset_path: "/etc/ansible/roles/turbo-hipster/datasets/"
+</pre>
+
+Further, if datasets are being updated it is also important to know that the list of databases as well as the database username and password are defined in the 'group_vars/turbo-hipster' file:
+<pre>
+# turbo-hipster test database username and password
+th_test_user: "nova"
+th_test_pass: "tester"
+th_test_host: "%"
+
+# List of databases used by the Turbo-Hipster tests. 
+th_databases:
+  - nova_dataset_20130910_devstack_applied_to_150 
+  - nova_dataset_20131007_devstack                
+  - nova_dataset_trivial_500                      
+  - nova_dataset_trivial_6000                     
+  - nova_datasets_user_001                        
+  - nova_dataset_user_002   
+</pre>
+
+Once changed you run a playbook: 
+<pre>ansible-playbook rolling_update_turbo_hipster.yml</pre>
+
+=== Improvements ===
+Although ansible handles rsync rather well, it handles git much better, and for ease of maintenance I believe it would be better to store the datasets in git repo somewhere (Public or Private). This will eliminate the full path requirement and would mean managing the dataset would be simple. Push the new changes to the repo and then just run the rolling update script. 
+As the config file very specific to the datasets, I also propose that in the dataset repository we have a config directory which holds the config.json file to use. Again making the management and configuration of all Turbo-Hipster servers simple. 
+
+I know there are slight differences in the config file, namely the name of the DBMS, but this can be remedied either by still storing this config file as the ansible template file, where ansible replaces the DBMS name as a variable, or in subfolders or different naming standards in the repo (if major changes to dataset or special configuration is required for an engine).   
+
+Discuss...
+
+== Design ==
+Ansible allows you to run ansible commands on each server via the command line, however it primarily uses what it calls playbooks set up or update all or part of the IT environment. At this point in time I have written 3 playbooks: 
+* site.yml
+* rolling_update_all.yml
+* rolling_update_turbo_hipster.yml
+
+These names, I hope, are quite explanatory. Before we delve into the playbooks. I need to have a quick word about the ansible project file structure. 
+
+=== Ansible file structure ===
+All the scripts on my POC ansible_master server exist under the /etc/ansible directory. This directory contains: 
+<pre>
+/etc/ansible
+├── bin
+│   └── setup_new_node.sh
+├── group_vars
+│   ├── all
+│   ├── mariadb
+│   ├── mysql
+│   ├── percona
+│   └── turbo-hipster
+├── hosts
+├── host_vars
+├── README
+├── roles
+│   ├── common
+│   ├── mariadb
+│   ├── mysql
+│   ├── percona
+│   ├── turbo-hipster
+│   └── users
+├── rolling_update_all.yml
+├── rolling_update_turbo_hipster.yml
+└── site.yml
+</pre>
+
+You will notice on the root of this folder structure you will find the playbooks, the files ending in yml. 
+
+When starting the most important file is the hosts file, which is also known as the inventory file. 
+==== hosts ====
+<pre>
+[mysql]
+node1
+
+[percona]
+node2
+
+[mariadb]
+node3
+
+[turbo-hipster]
+node[1:3]
+</pre>
+
+This file not only lists your clients (hosts), but also puts them into groups. The syntax for the host file rather simple, but allows you to set options and variables per client and/or group. This tends to make the hosts file a bit untidy so there is another mechanism to set variables and specific options on a per client (host) or group level but to not place them directly inside the file, and that is to create a text file with the name of the group or host and place it in the group_vars (or hosts_vars respectively) directory. Which is what I've done in the structure above.
+
+The variables are stored as key value pairs, lets take 'group_vars/turbo-hipster' as an example:
+<pre>
+---
+#Turbo-Hipster settings
+
+# Repository holding the turbo-hipster code. 
+th_repo: "https://github.com/rcbau/turbo-hipster.git"
+th_repo_destination: "/home/turbo-hipster/turbo-hipster"
+th_dataset_path: "/var/lib/turbo-hipster/"
+th_local_dataset_path: "/etc/ansible/roles/turbo-hipster/datasets/"
+th_user: "turbo-hipster"
+th_lxc_dir: "/var/lib/lxc"
+
+# List of databases used by the Turbo-Hipster tests. 
+th_databases:
+  - <redacted db name here>        
+  - <and here>
+  - <and also here>
+</pre>
+
+These are variables that are passed to any of the playbooks with any member of the turbo-hipster group. In our case these are all used by the turbo-hipster role; I will discuss roles later. 
+The variables in the example above are all obviously custom ones, but in this same way you can set any of the build in ansible variables as well.
+
+==== Roles ====
+While it is possible to write a playbook in one very large file, it is better to break it into reusable parts which can be included into any playbook. Enter the role. 
+A role lives under the role directory and has it's own specific file structure. Lets take an look at our turbo-hiptser role, as it is using more role features then any of the others: 
+<pre>
+roles/turbo-hipster/
+├── handlers
+│   └── main.yml
+├── tasks
+│   └── main.yml
+└── templates
+    ├── config.json.j2
+    ├── config.json.j2-real
+    └── turbo-hipster.sudoers.j2
+</pre>
+
+As you can see, a role is seperated into different sections. Each subfolder means something to ansible, and there are more then what are displayed here. For example if you have a common file that never changes or doesn't need to be templated then you place them in a '<role>/files/' folder, that file can be referenced in the role with 'file: src=<relative path> dest:<dest path on client>'. 
+Lets work our way through this structure so you can get a basic understanding of how it works. 
+
+===== tasks =====
+ The default file it loads is main.yml. This contains the main section of a role and lists the tasks that need to be run in order. A task, can be anything from using a template, placing a file, running a command or using any of the build in ansible modules (like checking out/updating a repo from git or using the synchronize module to rsync data from the master server). The task doesn't always run on a client, if task has already been performed, for example the git repo is already up to date, then it simply passed to the next task. However if a task is run you can, if you require, notify another task/event to take place. This event is a task that must be specified in the handlers section of the module. 
+
+===== handlers =====
+These are one off tasks that are called via the notify option in a normal task. A task can notify multiple handlers, but in essence a handler is simply a task, although it can not in turn notify other events. 
+
+There is one major caveat to handlers, they are only run at the '''end''' of a play. That is to say they will be called only at the end of when the module is run. Further, a list of tasks may notify the same event more then once, but the event at the end of play will only be called once. In the example of the turbo-hipster role, a bunch of handers are called, and it is important to note that when they are finally all run, they run in the order they appear in the handers/main.yml file. So if you want to deploy the datasets and then restart turbo-hipster maybe sure the restart event appears '''after''' the deploy datasets event. 
+
+===== files =====
+As mentioned previously, this folder contains any files you want to deploy, for example if you had a common sudoers file you wanted to deploy, you'd place the suders file under <role>/files/ and then write a task like: 
+<pre>
+- name: deploy sudoers file
+  file: src=sudoers dest=/etc/sudoers owner=root mode=0440
+</pre> 
+
+===== templates =====
+Templates are processed by the [http://jinja.pocoo.org/docs/  Jinja2 templating language]. You can reference your variables you've set, use conditionals and loops, but other then that they work like files do above, but use the format:
+<pre>
+- name: deploy sudoers file
+  template: src=sudoers.j2 dest=/etc/sudoers owner=root mode=0440
+</pre>
+
+==== Playbooks ====
+Most of the time ansible is run, it plays a playbook. 
+<pre>
+ansible-playbook <options> <path to playbook>
+</pre>
+
+See the next section for some examples of some of the more common ansible-playbook options. 
+
+A playbook in essence takes your clients/hosts and runs tasks or roles on them based on group membership. Here you can specify is the playbook requires sudo to be run, if you want the play book to be run all at once (each playbook runs each task on each client before moving to the next) or in serial, that is to say the play is run on the <serial> number of nodes completely before running on any other. The latter is how rolling updates work in essence in ansible.  
+
+===== Common examples for ansible-playbook =====
+Here are some examples:
+* simply running a script in our case (assuming we are in /etc/ansible/) is: 
+<pre>
+ansible-playbook site.yml
+</pre>
+* When running any ansible command, ansible needs an ansible hosts file, by default it is located at '/etc/ansible/hosts', if you need to specify a hosts file in a different location, then you can use: 
+<pre>
+ansible-playbook -i /etc/ansible/hosts site.yml
+</pre>
+* If the user you are connecting as to the servers doesn't have passwordless sudo, then you can get ansible to prompt you for the password with a '-K':
+<pre>
+asnible-playbook -K site.yml
+</pre>
+'''NOTE: ''' a '-k' will prompt for ssh password, but it is recommended to use SSH pre-shared keys.
+
+== RCBAU ansible run through ==
+At this stage, you should have a basic understanding of ansible. So in this section I will move through our playbooks and roles which are being used to build our turbo-hipster servers. 
+
+=== Playbooks ===
+Lets work our way through the playbooks. Seeing as all the work is actually contained inside the roles the playbooks are actually rather simple, lets start with the playbook at builds the entire site.
+
+==== site.yml ====
+
+Lets start with the first play of this playbook: 
+<pre>
+# Apply common configuration to all hosts
+- hosts: all
+  sudo: yes
+  roles:
+  - common
+  - users
+</pre>
+
+This play runs on all hosts, the group 'all' is a special ansible group which obviously matches all hosts. 
+This play run's via sudo with which it runs 2 roles:  
+* common - The 'common' role installs default packages, and this is where any base system configuration is applied. 
+* users - The 'user' roles sets up the users we want to have access to the servers, which includes deploying ssh public keys. 
+
+Let's move to the next play:
+<pre>
+- hosts: mysql
+  sudo: yes
+  roles:
+  - mysql
+</pre>
+This play matches all hosts in the mysql group, and as you can probably guess installs and sets up mysql. This role has been left generic, the actual turbo-hipster mysql user, password and databases are setup later in the turbo-hipster role. Leaving this generic means this role can be reused in any server that requires an installation and lockdown of mysql. 
+
+This role, installs mysql, deploys a templated my.cnf, sets up root's .my.cnf file and also locks down mysql (similar to running mysql_secure_installation) via ansible. 
+
+The next 2 plays are almost identical to this one, except they install percona and mariaDB, the only real differences is that these roles sets up the required apt repository, apt-key and in the case of percona, uses its own my.cnf. 
+
+<pre>
+- hosts: percona
+  sudo: yes
+  roles:
+  - percona
+
+- hosts: mariadb
+  sudo: yes
+  roles:
+  - mariadb
+</pre>
+
+Now we are up the the final and the most important play in this playbook: 
+<pre>
+- hosts: turbo-hipster
+  sudo: yes
+  roles:
+  - turbo-hipster
+</pre> 
+
+This play matches all servers that are members of the turbo-hipster group, at this point each the turbo-hipster specific tasks are run. 
+This includes: 
+* Setting up the required database user, password and databases. 
+'''NOTE:''' The databases required by T-H (datasets) are stored in the th_database list variable inside 'group_vars/turbo-hipster'
+* All build and testing requirements for the turbo-hipster software is installed. 
+* The source is checked out of the git repository.
+* Datasets deployed via rsync from the ansible master. 
+* If the source has changed then:
+** The source is rebuilt.
+** Installed
+** permissions and required folders created. 
+** The service is restarted. 
+
+This means, if you run the site.yml script, and there has been no change to the code, config or datasets then Turbo-Hipster wont be restarted. Meaning running this script should be safe if nothing has changed.
+
+==== rolling_update_all.yml ====
+
+This playbook updates all database and turbo-hipsters servers, but does it one at a time: 
+serial: 1
+
+<pre>
+---
+# This playbook does a rolling update for all servers serially (one at a time).
+# Change the value of serial: to adjust the number of server to be updated.
+
+- hosts: mysql
+  sudo: yes
+  serial: 1
+  
+  roles:
+  - common
+  - mysql
+
+- hosts: percona
+  sudo: yes
+  serial: 1
+  
+  roles:
+  - common
+  - percona
+
+- hosts: mariadb
+  sudo: yes
+  serial: 1
+  
+  roles:
+  - common
+  - mariadb
+
+- hosts: turbo-hipster
+  sudo: yes
+  serial: 1
+  
+  roles:
+  - turbo-hipster
+</pre>
+
+That means you can use this playbook to update the database servers, common packages, add any new users, and then check/re-deploy the turbo-hipster software to all servers. One at a time. 
+
+==== rolling_update_turbo_hipster.yml ====
+The final playbook, is similar, but only runs the turbo-hipster role on each server 1 at a time:
+<pre>
+---
+# This playbook does a rolling update of only the turbo-hipster specific portion of each server in the turbo-hipster group.
+# Change the value of serial: to adjust the number of server to be updated at a time.
+
+- hosts: turbo-hipster
+  sudo: yes
+  serial: 1
+  
+  roles:
+  - turbo-hipster
+</pre> 
+This playbook is to be used when only an update to the turbo-hipster codebase, config or datasets are required.
+
