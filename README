@@ -5,7 +5,7 @@
 == Introduction == 
 As the need for testing database migrations throughout the OpenStack project is growing,  as is the different possible types of DBMS systems used with the project. Something needed to be done to manage the buld, configuration and deployment of Turbo-Hipster servers. 
 
-Enter [http://www.ansibleworks.com/ Asnible], an IT automation tool. It can configure systems, deploy software, and orchestrate more advanced IT tasks such as continuous deployments or zero downtime rolling updates. The best part is Ansible doesn't require an agent installed on each client/node instead it uses Open SSH as its transport mechanism.
+Enter [http://www.ansibleworks.com/ Ansible], an IT automation tool. It can configure systems, deploy software, and orchestrate more advanced IT tasks such as continuous deployments or zero downtime rolling updates. The best part is Ansible doesn't require an agent installed on each client/node instead it uses Open SSH as its transport mechanism.
 
 But this article isn't about what ansible is, rather it's about how we can use it to make our lives easier. If you want to read more about ansible see the detailed [http://www.ansibleworks.com/docs/ documentation] on the ansible site.
 
@@ -223,7 +223,7 @@ ansible-playbook -i /etc/ansible/hosts site.yml
 </pre>
 * If the user you are connecting as to the servers doesn't have passwordless sudo, then you can get ansible to prompt you for the password with a '-K':
 <pre>
-asnible-playbook -K site.yml
+ansible-playbook -K site.yml
 </pre>
 '''NOTE: ''' a '-k' will prompt for ssh password, but it is recommended to use SSH pre-shared keys.
 
